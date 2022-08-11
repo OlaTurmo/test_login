@@ -47,7 +47,7 @@ def login(session_id):
 	response = requests.post('https://eservices.rs.ge/WebServices/hsUsers.ashx/Authenticate', cookies=cookies, headers=headers, json=json_data)
 
 	print(response.text)
-	}
+	
 
 	json_data1 = {
 		'pageID': str(uuid.uuid4()),
