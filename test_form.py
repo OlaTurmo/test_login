@@ -1,27 +1,17 @@
 import requests
-import uuid
+from requests.structures import CaseInsensitiveDict
 
-def get_session_id():
-	
-	session_id=requests.get("https://eservices.rs.ge/Login.aspx").cookies.get_dict()["ASP.NET_SessionId"]
-	return session_id
-	
+url = "https://eservices.rs.ge/WebServices/hsServiceRequests.ashx/SendServiceRequest"
 
+cookies = {'ASP.NET_SessionId': 'rvtzitsdrlvh2hu3cjsru10u','userToken': '2f97fa1a-7b0d-4510-a5a9-e29a204cc545-1108202202305', 'rsGrid_grdServiceRequestsGridPageSize': '100','rsGrid_grdTurnoverGridPageSize': '15',}
 
-
-def login(session_id):
-	
-	cookies = {
-		'ASP.NET_SessionId': session_id,
-	}
-
-	headers = {
+headers = {
 		'Accept': 'application/json, text/javascript, */*; q=0.01',
 		'Accept-Language': 'en-US,en;q=0.9',
 		'Connection': 'keep-alive',
 		'Content-Type': 'application/json; charset=UTF-8',
 		'Origin': 'https://eservices.rs.ge',
-		'Referer': 'https://eservices.rs.ge/Login.aspx?redirect_url=https://eservices.rs.ge/MainPage.aspx',
+		'Referer': 'https://eservices.rs.ge/ServiceRequestNew.aspx?p=414',
 		'Sec-Fetch-Dest': 'empty',
 		'Sec-Fetch-Mode': 'cors',
 		'Sec-Fetch-Site': 'same-origin',
@@ -32,68 +22,10 @@ def login(session_id):
 		'sec-ch-ua-platform': '"Windows"',
 	}
 
-	json_data = {
-		'pageID': str(uuid.uuid4()),
-		'username': 'satesto2',
-		'password': '123456',
-		'screen': '1280',
-		'vcode': None,
-		'check': '0',
-		'latitude': '',
-		'longitude': '',
-		'SessionID': session_id,
-	}
-
-	response = requests.post('https://eservices.rs.ge/WebServices/hsUsers.ashx/Authenticate', cookies=cookies, headers=headers, json=json_data)
-
-	print(response.text)
-	
-
-	json_data1 = {
-		'pageID': str(uuid.uuid4()),
-		'serviceID': '',
-		'addAppID': '',
-		'drpScUserListVal': '',
-    'inputFields':[
-        {
-            'ATTRIBUTE1': 'test1',
-        },
-        {
-           'ATTRIBUTE2': 'test2',
-        }
-        {
-            'ATTRIBUTE3': 'test3',
-        },
-        {
-           'ATTRIBUTE4': 'test4',
-        }
-       {
-            'ATTRIBUTE5': 'test5',
-        },
-        {
-           'ATTRIBUTE6': 'test6',
-        }
-        {
-            'ATTRIBUTE7': '2022',
-        },
-        {
-           'PRICE_FIELD': 'A577',
-        }],
-    'lockedFields': '',
-		'representative': null,
-		'representativeName': null
-	}
-  
-
-  
-  response = requests.post('https://eservices.rs.ge/WebServices/hsServiceRequests.ashx/SendServiceRequest', cookies=cookies, headers=headers, json=json_data1)
-
-	print(response.text)
-  
-
-if __name__=='__main__':
+data = '{"pageID": "e6a431f0-69f9-4809-aaa6-500a0d046f93","serviceID": "414","addAppID": "","drpScUserListVal": "","inputFields":[{"ATTRIBUTE1": "test1"},{"ATTRIBUTE2": "test2"}{"ATTRIBUTE3": "test3"},{"ATTRIBUTE4": "test4"},{"ATTRIBUTE5": "test5"},{"ATTRIBUTE6": "test6"},{"ATTRIBUTE7": "2022"},{"PRICE_FIELD": "A577"}],"lockedFields": "","representative": null,"representativeName": null}'
 
 
-	session_id=get_session_id()
-	
-	login(session_id)
+resp = requests.post(url, cookies=cookies, headers=headers, json=data)
+
+print(resp.text)
+
