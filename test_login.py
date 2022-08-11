@@ -47,6 +47,7 @@ def login(session_id):
 	response = requests.post('https://eservices.rs.ge/WebServices/hsUsers.ashx/Authenticate', cookies=cookies, headers=headers, json=json_data)
 
 	print(response.text)
+	print(session_id)
 
 
 if __name__=='__main__':
@@ -55,3 +56,4 @@ if __name__=='__main__':
 	session_id=get_session_id()
 	
 	login(session_id)
+	print(session_id)
