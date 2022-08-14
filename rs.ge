@@ -1,0 +1,427 @@
+import requests
+from requests_toolbelt.multipart.encoder import MultipartEncoder
+import uuid
+import random
+import string
+import json
+
+def get_session_id():
+	
+	session_id=requests.get("https://eservices.rs.ge/Login.aspx").cookies.get_dict()["ASP.NET_SessionId"]
+	return session_id
+	
+
+
+
+def login(session_id):
+	
+	cookies = {
+		'ASP.NET_SessionId': session_id,
+	}
+
+	headers = {
+		'Accept': 'application/json, text/javascript, */*; q=0.01',
+		'Accept-Language': 'en-US,en;q=0.9',
+		'Connection': 'keep-alive',
+		'Content-Type': 'application/json; charset=UTF-8',
+		'Origin': 'https://eservices.rs.ge',
+		'Referer': 'https://eservices.rs.ge/Login.aspx?redirect_url=https://eservices.rs.ge/MainPage.aspx',
+		'Sec-Fetch-Dest': 'empty',
+		'Sec-Fetch-Mode': 'cors',
+		'Sec-Fetch-Site': 'same-origin',
+		'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36',
+		'X-Requested-With': 'XMLHttpRequest',
+		'sec-ch-ua': '"Chromium";v="104", " Not A;Brand";v="99", "Google Chrome";v="104"',
+		'sec-ch-ua-mobile': '?0',
+		'sec-ch-ua-platform': '"Windows"',
+	}
+
+	json_data = {
+		'pageID': str(uuid.uuid4()),
+		'username': 'satesto2',
+		'password': '123456',
+		'screen': '1280',
+		'vcode': None,
+		'check': '0',
+		'latitude': '',
+		'longitude': '',
+		'SessionID': session_id,
+	}
+
+	response = requests.post('https://eservices.rs.ge/WebServices/hsUsers.ashx/Authenticate', cookies=cookies, headers=headers, json=json_data)
+	user_token=response.json()["d"]["userToken"]
+	return user_token
+
+
+
+
+def fetch_general_information(cookies):
+
+
+	headers = {
+		'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+		'Accept-Language': 'en-US,en;q=0.9',
+		'Connection': 'keep-alive',
+		'Referer': 'https://eservices.rs.ge/PayerInfo.aspx',
+		'Sec-Fetch-Dest': 'empty',
+		'Sec-Fetch-Mode': 'cors',
+		'Sec-Fetch-Site': 'same-origin',
+		'Upgrade-Insecure-Requests': '1',
+		'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36',
+		'sec-ch-ua': '"Chromium";v="104", " Not A;Brand";v="99", "Google Chrome";v="104"',
+		'sec-ch-ua-mobile': '?0',
+		'sec-ch-ua-platform': '"Windows"',
+	}
+
+	response = requests.get('https://eservices.rs.ge/PayerInfo.aspx', cookies=cookies, headers=headers)
+	
+	print(response.text)
+	
+	
+	
+def fetch_small_business_status_certificate(cookies,session_id):
+
+	headers = {
+		'Accept': 'application/json, text/javascript, */*; q=0.01',
+		'Accept-Language': 'en-US,en;q=0.9',
+		'Connection': 'keep-alive',
+		'Content-Type': 'application/json; charset=UTF-8',
+		'Origin': 'https://eservices.rs.ge',
+		'Referer': 'https://eservices.rs.ge/ServiceRequests.aspx',
+		'Sec-Fetch-Dest': 'empty',
+		'Sec-Fetch-Mode': 'cors',
+		'Sec-Fetch-Site': 'same-origin',
+		'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36',
+		'X-Requested-With': 'XMLHttpRequest',
+		'sec-ch-ua': '"Chromium";v="104", " Not A;Brand";v="99", "Google Chrome";v="104"',
+		'sec-ch-ua-mobile': '?0',
+		'sec-ch-ua-platform': '"Windows"',
+	}
+
+	json_data = {
+		'PageID': str(uuid.uuid4()),
+		'currentTab': 'tab_ServiceRequests',
+		'currentTabNotif': '',
+		'startRowIndex': 0,
+		'maximumRows': 100,
+		'sortExpression': '',
+		'filterExpression': [
+			{
+				'FieldName': 'REQUEST_DATE',
+				'DataType': 2,
+				'FilterValue': {
+					'StartDate': '01-Jan-22',
+					'EndDate': '31-Dec-22',
+					'DefaultPeriod': 31,
+				},
+				'Func': 5,
+			},
+		],
+		'summaryFields': [],
+		'startDate': '',
+		'endDate': '',
+		'ignorePeriod': False,
+		'gridData': 0,
+		'SessionID': session_id,
+	}
+
+	response = requests.post('https://eservices.rs.ge/WebServices/hsServiceRequests.ashx/GrdServiceRequests', cookies=cookies, headers=headers, json=json_data).json()
+	
+	print(response)
+	
+	
+def send_application_for_residency_api(cookies,image1_name,image2_name):
+
+	data={
+		"pageID": str(uuid.uuid4()),
+		"serviceID": 414,
+		"addAppID": "",
+		"drpScUserListVal": "",
+		"inputFields": [
+			{
+				"ATTRIBUTE1": "eazeaz"
+			},
+			{
+				"ATTRIBUTE2": "ezaeza"
+			},
+			{
+				"ATTRIBUTE5": "ezaeza"
+			},
+			{
+				"ATTRIBUTE3": "ezaeaz"
+			},
+			{
+				"ATTRIBUTE6": "fdsfsd"
+			},
+			{
+				"ATTRIBUTE7": "2021"
+			},
+			{
+				"DOC1": "C:\\fakepath\\"+image1_name
+			},
+			{
+				"ATTRIBUTE4": "zeazeazeaz"
+			},
+			{
+				"DOC3": "C:\\fakepath\\"+image2_name
+			},
+			{
+				"PRICE_FIELD": "303"
+			}
+		],
+		"lockedFields": [],
+		"representative": "null",
+		"representativeName": "null"
+	}
+
+	
+
+	fields={
+		"upl_DOC1":(image1_name, open(image1_name, 'rb'), 'image/png'),
+		"upl_DOC3":(image2_name, open(image2_name, 'rb'), 'image/png'),
+		"json": json.dumps(data)
+	
+	}
+	
+
+	
+	boundary = '----WebKitFormBoundary' + ''.join(random.sample(string.ascii_letters + string.digits, 16))
+	multipart_data = MultipartEncoder(fields=fields, boundary=boundary)
+
+	headers = {
+			'Content-Type': multipart_data.content_type,
+			'Origin': 'https://eservices.rs.ge',
+			'Referer': 'https://eservices.rs.ge/ServiceRequestNew.aspx?p=414',
+			
+		}
+
+	s=requests.Session()
+	s.get("https://eservices.rs.ge/ServiceRequestNew.aspx?p=414",cookies=cookies)
+
+	response = s.post('https://eservices.rs.ge/WebServices/hsServiceRequests.ashx/SendServiceRequest',multipart_data, cookies=cookies, headers=headers)
+
+	print(response.text)
+
+
+def get_declarations(cookies):
+
+	headers = {
+		'Accept': 'application/json, text/javascript, */*; q=0.01',
+		'Accept-Language': 'en-US,en;q=0.9',
+		'Connection': 'keep-alive',
+		'Content-Type': 'application/json; charset=UTF-8',
+		# Requests sorts cookies= alphabetically
+		# 'Cookie': 'ASP.NET_SessionId=awxdipp5nqwhwelcu1mmjl34; __utma=94649887.2016390696.1660261066.1660261066.1660261066.1; __utmc=94649887; __utmz=94649887.1660261066.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); __utmt=1; __utmb=94649887.2.10.1660261066',
+		'Origin': 'https://decl.rs.ge',
+		'Referer': 'https://decl.rs.ge/decls.aspx',
+		'Sec-Fetch-Dest': 'empty',
+		'Sec-Fetch-Mode': 'cors',
+		'Sec-Fetch-Site': 'same-origin',
+		'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36',
+		'X-Requested-With': 'XMLHttpRequest',
+		'sec-ch-ua': '"Chromium";v="104", " Not A;Brand";v="99", "Google Chrome";v="104"',
+		'sec-ch-ua-mobile': '?0',
+		'sec-ch-ua-platform': '"Windows"',
+	}
+
+
+	
+	data={
+		"grid_id":3,
+		"page_size":1000,
+		"curent_page":1,
+		"filters":[
+			{
+				"x_name":"gad_kod",
+				"value":"58",
+				"filter_type":"0"
+			},
+			{
+				"x_name":"sag_periodi",
+				"value":period,
+				"filter_type":"0"
+			},
+			{
+				"x_name":"tax_type",
+				"value":"1",
+				"filter_type":"0"
+			}
+			],
+		"order_by":[
+      
+			],
+		"guid":str(uuid.uuid4())
+	}
+	
+	redirect_declaration(cookies)
+	response = requests.post('https://decl.rs.ge/sys_service.asmx/get_grid_r_data', cookies=cookies, headers=headers, data=json.dumps(data))
+	print(response.text)
+	
+	
+	
+def redirect_declaration(cookies):
+
+	headers = {
+		'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+		'Accept-Language': 'en-US,en;q=0.9',
+		'Connection': 'keep-alive',
+		'Referer': 'https://decl.rs.ge/decls.aspx',
+		'Sec-Fetch-Dest': 'empty',
+		'Sec-Fetch-Mode': 'cors',
+		'Sec-Fetch-Site': 'same-origin',
+		'Upgrade-Insecure-Requests': '1',
+		'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36',
+		'sec-ch-ua': '"Chromium";v="104", " Not A;Brand";v="99", "Google Chrome";v="104"',
+		'sec-ch-ua-mobile': '?0',
+		'sec-ch-ua-platform': '"Windows"',
+	}
+
+
+	redirect_url = requests.head("https://eservices.rs.ge/Redirect.ashx?Module=DECL", cookies=cookies).headers["location"]
+	
+	res=requests.get(redirect_url,cookies=cookies,headers=headers)
+	
+
+def verify_bearer_token(token):
+	
+	headers = {
+		'Accept': 'application/json, text/plain, */*',
+		'Accept-Language': 'Georgia',
+		'Authorization': 'bearer '+token,
+		'Cache-Control': 'no-cache',
+		'Connection': 'keep-alive',
+		'Origin': 'https://eservices.rs.ge',
+		'Pragma': 'no-cache',
+		'Referer': 'https://eservices.rs.ge/',
+		'Sec-Fetch-Dest': 'empty',
+		'Sec-Fetch-Mode': 'cors',
+		'Sec-Fetch-Site': 'same-site',
+		'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36',
+		'sec-ch-ua': '"Chromium";v="104", " Not A;Brand";v="99", "Google Chrome";v="104"',
+		'sec-ch-ua-mobile': '?0',
+		'sec-ch-ua-platform': '"Windows"',
+	}
+
+	json_data = None
+
+	try:
+		status = requests.post('https://eapi.rs.ge/Header/CheckForActiveToken', headers=headers).json()["DATA"]["ActiveToken"]
+		if status==1:
+			return True
+		else:
+			return False
+	except:
+		return False	
+	
+
+
+
+def fetch_liabilities_payments(user_token,filename):
+	
+	headers = {
+		'Accept': 'application/json, text/plain, */*',
+		'Accept-Language': 'Georgia',
+		'Authorization': 'bearer '+user_token,
+		'Cache-Control': 'no-cache',
+		'Connection': 'keep-alive',
+		'Origin': 'https://eservices.rs.ge',
+		'Pragma': 'no-cache',
+		'Referer': 'https://eservices.rs.ge/',
+		'Sec-Fetch-Dest': 'empty',
+		'Sec-Fetch-Mode': 'cors',
+		'Sec-Fetch-Site': 'same-site',
+		'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36',
+		'sec-ch-ua': '"Chromium";v="104", " Not A;Brand";v="99", "Google Chrome";v="104"',
+		'sec-ch-ua-mobile': '?0',
+		'sec-ch-ua-platform': '"Windows"',
+	}
+
+	json_data = {
+		'View': 'V_GRD_OPERATIONS',
+		'NotifView': '',
+		'StartRowIndex': 0,
+		'MaximumRows': 10,
+		'SortExpression': None,
+		'FilterExpression': [],
+		'DataExportType': 'ExportXLS',
+		'IgnorePeriod': False,
+		'ExportFieldsForm': [
+			{
+				'field': 'STATUS_ICO',
+				'header': 'გადახდილი/დარიცხული',
+			},
+			{
+				'field': 'SERV_DATE',
+				'header': 'ოპერაციის თარიღი',
+			},
+			{
+				'field': 'NOTIFY_ID',
+				'header': 'სარეგისტრაციო №',
+			},
+			{
+				'field': 'DOC_TYPE',
+				'header': 'ტიპი',
+			},
+			{
+				'field': 'AMOUNT',
+				'header': 'თანხა',
+			},
+			{
+				'field': 'DESCRIPTION',
+				'header': 'შინაარსი',
+			},
+			{
+				'field': 'DOC_DATE',
+				'header': 'ვალდებულების თარიღი',
+			},
+		],
+		'SummaryFields': [],
+		'DataPart': 1,
+	}
+
+
+	content = requests.post('https://eapi.rs.ge/BalanceOperations/ExportGrdOperations', headers=headers, json=json_data).content
+
+	with open(filename+".xls", 'wb') as s:
+		s.write(content)
+		
+if __name__=='__main__':
+
+	
+
+	session_id=get_session_id()
+	user_token=login(session_id)
+	
+	#form cookies
+	cookies = {
+		'ASP.NET_SessionId': session_id,
+		'userToken': user_token,
+		'MobileAppPopup': 'true',
+		'NewsCustomsPopup': 'false',
+		'CustomPopup702': 'false',
+		'PhytoVetPopup': 'false',
+		'NonTariffControlPopup': 'false',
+		'CustomsPopup783': 'false',
+	}
+	
+
+	#api endpoint 3
+	
+	
+	#api endpoint 4
+	# get_declarations(cookies,"202201")  #jan 2022
+	
+	#api endpoint 5
+	if verify_bearer_token(user_token):
+		fetch_liabilities_payments(user_token,"data")
+		
+
+	
+	#api endpoint 6
+	# fetch_small_business_status_certificate(cookies,session_id)
+	#api endpoint 7
+	# fetch_general_information(cookies)  
+	
+	#api endpoint 15
+	# send_application_for_residency_api(cookies,"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/1200px-Image_created_with_a_mobile_phone.png","https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Image_created_with_a_mobile_phone.png/1200px-Image_created_with_a_mobile_phone.png")
+
